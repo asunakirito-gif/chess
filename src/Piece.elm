@@ -1,4 +1,4 @@
-module Piece exposing (Color(..), Kind(..), Piece)
+module Piece exposing (Color(..), Kind(..), Piece, render)
 
 
 type Color
@@ -31,7 +31,7 @@ render { kind, color } =
             '♛'
 
         ( Rook, Black ) ->
-            '♚'
+            '♜'
 
         ( Bishop, Black ) ->
             '♝'

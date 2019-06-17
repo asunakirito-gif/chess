@@ -4,4 +4,8 @@ import Piece exposing (Piece)
 
 
 type alias Cell =
-    { piece : Maybe Piece }
+    { piece : Maybe Piece
+    , row : Int
+    , column : Int
+    , isSelected : Bool
+    }

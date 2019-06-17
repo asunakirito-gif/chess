@@ -863,6 +863,43 @@ var _Basics_xor = F2(function(a, b) { return a !== b; });
 
 
 
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
+
+
+
 function _Char_toCode(char)
 {
 	var code = char.charCodeAt(0);
@@ -3882,43 +3919,6 @@ function _VirtualDom_dekey(keyedNode)
 
 
 
-var _Bitwise_and = F2(function(a, b)
-{
-	return a & b;
-});
-
-var _Bitwise_or = F2(function(a, b)
-{
-	return a | b;
-});
-
-var _Bitwise_xor = F2(function(a, b)
-{
-	return a ^ b;
-});
-
-function _Bitwise_complement(a)
-{
-	return ~a;
-};
-
-var _Bitwise_shiftLeftBy = F2(function(offset, a)
-{
-	return a << offset;
-});
-
-var _Bitwise_shiftRightBy = F2(function(offset, a)
-{
-	return a >> offset;
-});
-
-var _Bitwise_shiftRightZfBy = F2(function(offset, a)
-{
-	return a >>> offset;
-});
-
-
-
 
 // ELEMENT
 
@@ -4357,7 +4357,21 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$Board$setCoordinate = F3(
+	function (row, column, cell) {
+		return _Utils_update(
+			cell,
+			{column: column, row: row});
+	});
+var elm$core$Basics$False = {$: 'False'};
+var elm$core$Basics$apR = F2(
+	function (x, f) {
+		return f(x);
+	});
 var elm$core$Maybe$Nothing = {$: 'Nothing'};
+var elm$core$Array$Leaf = function (a) {
+	return {$: 'Leaf', a: a};
+};
 var elm$core$Array$branchFactor = 32;
 var elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
@@ -4452,11 +4466,6 @@ var elm$core$Basics$logBase = F2(
 var elm$core$Basics$toFloat = _Basics_toFloat;
 var elm$core$Array$shiftStep = elm$core$Basics$ceiling(
 	A2(elm$core$Basics$logBase, 2, elm$core$Array$branchFactor));
-var elm$core$Elm$JsArray$empty = _JsArray_empty;
-var elm$core$Array$empty = A4(elm$core$Array$Array_elm_builtin, 0, elm$core$Array$shiftStep, elm$core$Elm$JsArray$empty, elm$core$Elm$JsArray$empty);
-var elm$core$Array$Leaf = function (a) {
-	return {$: 'Leaf', a: a};
-};
 var elm$core$Array$SubTree = function (a) {
 	return {$: 'SubTree', a: a};
 };
@@ -4505,10 +4514,6 @@ var elm$core$Array$compressNodes = F2(
 			}
 		}
 	});
-var elm$core$Basics$apR = F2(
-	function (x, f) {
-		return f(x);
-	});
 var elm$core$Basics$eq = _Utils_equal;
 var elm$core$Tuple$first = function (_n0) {
 	var x = _n0.a;
@@ -4543,6 +4548,7 @@ var elm$core$Basics$max = F2(
 	});
 var elm$core$Basics$mul = _Basics_mul;
 var elm$core$Basics$sub = _Basics_sub;
+var elm$core$Elm$JsArray$empty = _JsArray_empty;
 var elm$core$Elm$JsArray$length = _JsArray_length;
 var elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
@@ -4567,7 +4573,68 @@ var elm$core$Array$builderToArray = F2(
 				builder.tail);
 		}
 	});
-var elm$core$Basics$False = {$: 'False'};
+var elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var elm$core$Array$tailIndex = function (len) {
+	return (len >>> 5) << 5;
+};
+var elm$core$Basics$True = {$: 'True'};
+var elm$core$Elm$JsArray$foldl = _JsArray_foldl;
+var elm$core$Elm$JsArray$indexedMap = _JsArray_indexedMap;
+var elm$core$Array$indexedMap = F2(
+	function (func, _n0) {
+		var len = _n0.a;
+		var tree = _n0.c;
+		var tail = _n0.d;
+		var initialBuilder = {
+			nodeList: _List_Nil,
+			nodeListSize: 0,
+			tail: A3(
+				elm$core$Elm$JsArray$indexedMap,
+				func,
+				elm$core$Array$tailIndex(len),
+				tail)
+		};
+		var helper = F2(
+			function (node, builder) {
+				if (node.$ === 'SubTree') {
+					var subTree = node.a;
+					return A3(elm$core$Elm$JsArray$foldl, helper, builder, subTree);
+				} else {
+					var leaf = node.a;
+					var offset = builder.nodeListSize * elm$core$Array$branchFactor;
+					var mappedLeaf = elm$core$Array$Leaf(
+						A3(elm$core$Elm$JsArray$indexedMap, func, offset, leaf));
+					return {
+						nodeList: A2(elm$core$List$cons, mappedLeaf, builder.nodeList),
+						nodeListSize: builder.nodeListSize + 1,
+						tail: builder.tail
+					};
+				}
+			});
+		return A2(
+			elm$core$Array$builderToArray,
+			true,
+			A3(elm$core$Elm$JsArray$foldl, helper, initialBuilder, tree));
+	});
+var tortus$elm_array_2d$Array2D$indexedMap = F2(
+	function (func, array2d) {
+		var mappedData = A2(
+			elm$core$Array$indexedMap,
+			F2(
+				function (row, rowAry) {
+					return A2(
+						elm$core$Array$indexedMap,
+						F2(
+							function (col, value) {
+								return A3(func, row, col, value);
+							}),
+						rowAry);
+				}),
+			array2d.data);
+		return {columns: array2d.columns, data: mappedData};
+	});
+var elm$core$Array$empty = A4(elm$core$Array$Array_elm_builtin, 0, elm$core$Array$shiftStep, elm$core$Elm$JsArray$empty, elm$core$Elm$JsArray$empty);
 var elm$core$Basics$idiv = _Basics_idiv;
 var elm$core$Basics$lt = _Utils_lt;
 var elm$core$Elm$JsArray$initialize = _JsArray_initialize;
@@ -4627,21 +4694,334 @@ var tortus$elm_array_2d$Array2D$repeat = F3(
 			data: A2(elm$core$Array$repeat, numRows, row)
 		};
 	});
-var author$project$Board$initialBoard = A3(
-	tortus$elm_array_2d$Array2D$repeat,
-	8,
-	8,
-	{piece: elm$core$Maybe$Nothing});
-var elm$core$Basics$True = {$: 'True'};
+var author$project$Board$initialBoard = A2(
+	tortus$elm_array_2d$Array2D$indexedMap,
+	author$project$Board$setCoordinate,
+	A3(
+		tortus$elm_array_2d$Array2D$repeat,
+		8,
+		8,
+		{column: 0, isSelected: false, piece: elm$core$Maybe$Nothing, row: 0}));
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var elm$core$Array$bitMask = 4294967295 >>> (32 - elm$core$Array$shiftStep);
+var elm$core$Bitwise$and = _Bitwise_and;
+var elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
+var elm$core$Elm$JsArray$unsafeSet = _JsArray_unsafeSet;
+var elm$core$Array$setHelp = F4(
+	function (shift, index, value, tree) {
+		var pos = elm$core$Array$bitMask & (index >>> shift);
+		var _n0 = A2(elm$core$Elm$JsArray$unsafeGet, pos, tree);
+		if (_n0.$ === 'SubTree') {
+			var subTree = _n0.a;
+			var newSub = A4(elm$core$Array$setHelp, shift - elm$core$Array$shiftStep, index, value, subTree);
+			return A3(
+				elm$core$Elm$JsArray$unsafeSet,
+				pos,
+				elm$core$Array$SubTree(newSub),
+				tree);
+		} else {
+			var values = _n0.a;
+			var newLeaf = A3(elm$core$Elm$JsArray$unsafeSet, elm$core$Array$bitMask & index, value, values);
+			return A3(
+				elm$core$Elm$JsArray$unsafeSet,
+				pos,
+				elm$core$Array$Leaf(newLeaf),
+				tree);
+		}
+	});
+var elm$core$Basics$ge = _Utils_ge;
+var elm$core$Basics$or = _Basics_or;
+var elm$core$Array$set = F3(
+	function (index, value, array) {
+		var len = array.a;
+		var startShift = array.b;
+		var tree = array.c;
+		var tail = array.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? array : ((_Utils_cmp(
+			index,
+			elm$core$Array$tailIndex(len)) > -1) ? A4(
+			elm$core$Array$Array_elm_builtin,
+			len,
+			startShift,
+			tree,
+			A3(elm$core$Elm$JsArray$unsafeSet, elm$core$Array$bitMask & index, value, tail)) : A4(
+			elm$core$Array$Array_elm_builtin,
+			len,
+			startShift,
+			A4(elm$core$Array$setHelp, startShift, index, value, tree),
+			tail));
+	});
+var elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var elm$core$Array$getHelp = F3(
+	function (shift, index, tree) {
+		getHelp:
+		while (true) {
+			var pos = elm$core$Array$bitMask & (index >>> shift);
+			var _n0 = A2(elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (_n0.$ === 'SubTree') {
+				var subTree = _n0.a;
+				var $temp$shift = shift - elm$core$Array$shiftStep,
+					$temp$index = index,
+					$temp$tree = subTree;
+				shift = $temp$shift;
+				index = $temp$index;
+				tree = $temp$tree;
+				continue getHelp;
+			} else {
+				var values = _n0.a;
+				return A2(elm$core$Elm$JsArray$unsafeGet, elm$core$Array$bitMask & index, values);
+			}
+		}
+	});
+var elm$core$Array$get = F2(
+	function (index, _n0) {
+		var len = _n0.a;
+		var startShift = _n0.b;
+		var tree = _n0.c;
+		var tail = _n0.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? elm$core$Maybe$Nothing : ((_Utils_cmp(
+			index,
+			elm$core$Array$tailIndex(len)) > -1) ? elm$core$Maybe$Just(
+			A2(elm$core$Elm$JsArray$unsafeGet, elm$core$Array$bitMask & index, tail)) : elm$core$Maybe$Just(
+			A3(elm$core$Array$getHelp, startShift, index, tree)));
+	});
+var tortus$elm_array_2d$Array2D$getRow = F2(
+	function (row, array2d) {
+		return A2(elm$core$Array$get, row, array2d.data);
+	});
+var tortus$elm_array_2d$Array2D$set = F4(
+	function (row, col, newValue, array2d) {
+		return A2(
+			elm$core$Maybe$withDefault,
+			array2d,
+			A2(
+				elm$core$Maybe$map,
+				function (rowAry) {
+					return _Utils_update(
+						array2d,
+						{
+							data: A3(
+								elm$core$Array$set,
+								row,
+								A3(elm$core$Array$set, col, newValue, rowAry),
+								array2d.data)
+						});
+				},
+				A2(tortus$elm_array_2d$Array2D$getRow, row, array2d)));
+	});
+var author$project$Board$placePiece = F4(
+	function (row, column, piece, board) {
+		return A4(
+			tortus$elm_array_2d$Array2D$set,
+			row,
+			column,
+			{
+				column: column,
+				isSelected: false,
+				piece: elm$core$Maybe$Just(piece),
+				row: row
+			},
+			board);
+	});
+var author$project$Piece$Bishop = {$: 'Bishop'};
+var author$project$Piece$Black = {$: 'Black'};
+var author$project$Piece$King = {$: 'King'};
+var author$project$Piece$Knight = {$: 'Knight'};
+var author$project$Piece$Pawn = {$: 'Pawn'};
+var author$project$Piece$Queen = {$: 'Queen'};
+var author$project$Piece$Rook = {$: 'Rook'};
+var author$project$Piece$White = {$: 'White'};
+var author$project$Board$placePieces = function (board) {
+	return A4(
+		author$project$Board$placePiece,
+		1,
+		7,
+		{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+		A4(
+			author$project$Board$placePiece,
+			1,
+			6,
+			{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+			A4(
+				author$project$Board$placePiece,
+				1,
+				5,
+				{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+				A4(
+					author$project$Board$placePiece,
+					1,
+					4,
+					{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+					A4(
+						author$project$Board$placePiece,
+						1,
+						3,
+						{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+						A4(
+							author$project$Board$placePiece,
+							1,
+							2,
+							{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+							A4(
+								author$project$Board$placePiece,
+								1,
+								1,
+								{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+								A4(
+									author$project$Board$placePiece,
+									1,
+									0,
+									{color: author$project$Piece$Black, kind: author$project$Piece$Pawn},
+									A4(
+										author$project$Board$placePiece,
+										0,
+										7,
+										{color: author$project$Piece$Black, kind: author$project$Piece$Rook},
+										A4(
+											author$project$Board$placePiece,
+											0,
+											6,
+											{color: author$project$Piece$Black, kind: author$project$Piece$Knight},
+											A4(
+												author$project$Board$placePiece,
+												0,
+												5,
+												{color: author$project$Piece$Black, kind: author$project$Piece$Bishop},
+												A4(
+													author$project$Board$placePiece,
+													0,
+													4,
+													{color: author$project$Piece$Black, kind: author$project$Piece$King},
+													A4(
+														author$project$Board$placePiece,
+														0,
+														3,
+														{color: author$project$Piece$Black, kind: author$project$Piece$Queen},
+														A4(
+															author$project$Board$placePiece,
+															0,
+															2,
+															{color: author$project$Piece$Black, kind: author$project$Piece$Bishop},
+															A4(
+																author$project$Board$placePiece,
+																0,
+																1,
+																{color: author$project$Piece$Black, kind: author$project$Piece$Knight},
+																A4(
+																	author$project$Board$placePiece,
+																	0,
+																	0,
+																	{color: author$project$Piece$Black, kind: author$project$Piece$Rook},
+																	A4(
+																		author$project$Board$placePiece,
+																		6,
+																		7,
+																		{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																		A4(
+																			author$project$Board$placePiece,
+																			6,
+																			6,
+																			{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																			A4(
+																				author$project$Board$placePiece,
+																				6,
+																				5,
+																				{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																				A4(
+																					author$project$Board$placePiece,
+																					6,
+																					4,
+																					{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																					A4(
+																						author$project$Board$placePiece,
+																						6,
+																						3,
+																						{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																						A4(
+																							author$project$Board$placePiece,
+																							6,
+																							2,
+																							{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																							A4(
+																								author$project$Board$placePiece,
+																								6,
+																								1,
+																								{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																								A4(
+																									author$project$Board$placePiece,
+																									6,
+																									0,
+																									{color: author$project$Piece$White, kind: author$project$Piece$Pawn},
+																									A4(
+																										author$project$Board$placePiece,
+																										7,
+																										7,
+																										{color: author$project$Piece$White, kind: author$project$Piece$Rook},
+																										A4(
+																											author$project$Board$placePiece,
+																											7,
+																											6,
+																											{color: author$project$Piece$White, kind: author$project$Piece$Knight},
+																											A4(
+																												author$project$Board$placePiece,
+																												7,
+																												5,
+																												{color: author$project$Piece$White, kind: author$project$Piece$Bishop},
+																												A4(
+																													author$project$Board$placePiece,
+																													7,
+																													4,
+																													{color: author$project$Piece$White, kind: author$project$Piece$King},
+																													A4(
+																														author$project$Board$placePiece,
+																														7,
+																														3,
+																														{color: author$project$Piece$White, kind: author$project$Piece$Queen},
+																														A4(
+																															author$project$Board$placePiece,
+																															7,
+																															2,
+																															{color: author$project$Piece$White, kind: author$project$Piece$Bishop},
+																															A4(
+																																author$project$Board$placePiece,
+																																7,
+																																1,
+																																{color: author$project$Piece$White, kind: author$project$Piece$Knight},
+																																A4(
+																																	author$project$Board$placePiece,
+																																	7,
+																																	0,
+																																	{color: author$project$Piece$White, kind: author$project$Piece$Rook},
+																																	board))))))))))))))))))))))))))))))));
+};
+var author$project$Main$Initial = {$: 'Initial'};
+var elm$core$Debug$log = _Debug_log;
 var elm$core$Result$isOk = function (result) {
 	if (result.$ === 'Ok') {
 		return true;
 	} else {
 		return false;
 	}
-};
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
 };
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -4666,7 +5046,6 @@ var elm$json$Json$Decode$OneOf = function (a) {
 };
 var elm$core$Basics$and = _Basics_and;
 var elm$core$Basics$append = _Utils_append;
-var elm$core$Basics$or = _Basics_or;
 var elm$core$Char$toCode = _Char_toCode;
 var elm$core$Char$isLower = function (_char) {
 	var code = elm$core$Char$toCode(_char);
@@ -4857,15 +5236,133 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$init = function (_n0) {
+	var _n1 = A2(
+		elm$core$Debug$log,
+		'msg',
+		author$project$Board$placePieces(author$project$Board$initialBoard));
 	return _Utils_Tuple2(
-		{board: author$project$Board$initialBoard},
+		{
+			board: author$project$Board$placePieces(author$project$Board$initialBoard),
+			state: author$project$Main$Initial
+		},
 		elm$core$Platform$Cmd$none);
+};
+var author$project$Main$Selected = function (a) {
+	return {$: 'Selected', a: a};
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
-		return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+		var _n0 = A2(elm$core$Debug$log, 'msg', msg);
+		var message = msg.a;
+		var cell = message.a;
+		var _n3 = _Utils_Tuple2(cell.piece, model.state);
+		if (_n3.a.$ === 'Nothing') {
+			if (_n3.b.$ === 'Initial') {
+				var _n5 = _n3.a;
+				var _n6 = _n3.b;
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			} else {
+				var _n7 = _n3.a;
+				var c = _n3.b.a;
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			}
+		} else {
+			if (_n3.b.$ === 'Initial') {
+				var piece = _n3.a.a;
+				var _n4 = _n3.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							board: A4(
+								tortus$elm_array_2d$Array2D$set,
+								cell.row,
+								cell.column,
+								_Utils_update(
+									cell,
+									{isSelected: true}),
+								model.board),
+							state: author$project$Main$Selected(cell)
+						}),
+					elm$core$Platform$Cmd$none);
+			} else {
+				var piece = _n3.a.a;
+				var c = _n3.b.a;
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			}
+		}
 	});
-var author$project$Board$size = 20;
+var author$project$Board$Click = function (a) {
+	return {$: 'Click', a: a};
+};
+var author$project$Board$size = 80;
+var author$project$Piece$render = function (_n0) {
+	var kind = _n0.kind;
+	var color = _n0.color;
+	var _n1 = _Utils_Tuple2(kind, color);
+	if (_n1.b.$ === 'Black') {
+		switch (_n1.a.$) {
+			case 'King':
+				var _n2 = _n1.a;
+				var _n3 = _n1.b;
+				return _Utils_chr('♚');
+			case 'Queen':
+				var _n4 = _n1.a;
+				var _n5 = _n1.b;
+				return _Utils_chr('♛');
+			case 'Rook':
+				var _n6 = _n1.a;
+				var _n7 = _n1.b;
+				return _Utils_chr('♜');
+			case 'Bishop':
+				var _n8 = _n1.a;
+				var _n9 = _n1.b;
+				return _Utils_chr('♝');
+			case 'Knight':
+				var _n10 = _n1.a;
+				var _n11 = _n1.b;
+				return _Utils_chr('♞');
+			default:
+				var _n12 = _n1.a;
+				var _n13 = _n1.b;
+				return _Utils_chr('♟');
+		}
+	} else {
+		switch (_n1.a.$) {
+			case 'King':
+				var _n14 = _n1.a;
+				var _n15 = _n1.b;
+				return _Utils_chr('♔');
+			case 'Queen':
+				var _n16 = _n1.a;
+				var _n17 = _n1.b;
+				return _Utils_chr('♕');
+			case 'Rook':
+				var _n18 = _n1.a;
+				var _n19 = _n1.b;
+				return _Utils_chr('♖');
+			case 'Bishop':
+				var _n20 = _n1.a;
+				var _n21 = _n1.b;
+				return _Utils_chr('♗');
+			case 'Knight':
+				var _n22 = _n1.a;
+				var _n23 = _n1.b;
+				return _Utils_chr('♘');
+			default:
+				var _n24 = _n1.a;
+				var _n25 = _n1.b;
+				return _Utils_chr('♙');
+		}
+	}
+};
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
+var elm$core$String$cons = _String_cons;
+var elm$core$String$fromChar = function (_char) {
+	return A2(elm$core$String$cons, _char, '');
+};
 var rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
 	return {$: 'AppendProperty', a: a};
 };
@@ -4873,6 +5370,9 @@ var rtfeldman$elm_css$Css$property = F2(
 	function (key, value) {
 		return rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
 	});
+var rtfeldman$elm_css$Css$backgroundColor = function (c) {
+	return A2(rtfeldman$elm_css$Css$property, 'background-color', c.value);
+};
 var rtfeldman$elm_css$Css$prop2 = F3(
 	function (key, argA, argB) {
 		return A2(
@@ -4889,6 +5389,7 @@ var rtfeldman$elm_css$Css$prop1 = F2(
 	function (key, arg) {
 		return A2(rtfeldman$elm_css$Css$property, key, arg.value);
 	});
+var rtfeldman$elm_css$Css$fontSize = rtfeldman$elm_css$Css$prop1('font-size');
 var rtfeldman$elm_css$Css$height = rtfeldman$elm_css$Css$prop1('height');
 var rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
 var elm$core$String$fromFloat = _String_fromNumber;
@@ -4918,6 +5419,97 @@ var rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 		};
 	});
 var rtfeldman$elm_css$Css$px = A2(rtfeldman$elm_css$Css$Internal$lengthConverter, rtfeldman$elm_css$Css$PxUnits, 'px');
+var elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							elm$core$List$foldl,
+							fn,
+							acc,
+							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var rtfeldman$elm_css$Css$cssFunction = F2(
+	function (funcName, args) {
+		return funcName + ('(' + (A2(elm$core$String$join, ', ', args) + ')'));
+	});
+var rtfeldman$elm_css$Css$rgb = F3(
+	function (r, g, b) {
+		return {
+			alpha: 1,
+			blue: b,
+			color: rtfeldman$elm_css$Css$Structure$Compatible,
+			green: g,
+			red: r,
+			value: A2(
+				rtfeldman$elm_css$Css$cssFunction,
+				'rgb',
+				A2(
+					elm$core$List$map,
+					elm$core$String$fromInt,
+					_List_fromArray(
+						[r, g, b])))
+		};
+	});
 var rtfeldman$elm_css$Css$solid = {borderStyle: rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var rtfeldman$elm_css$Css$width = rtfeldman$elm_css$Css$prop1('width');
 var rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
@@ -4927,10 +5519,6 @@ var rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
 var rtfeldman$elm_css$VirtualDom$Styled$node = rtfeldman$elm_css$VirtualDom$Styled$Node;
 var rtfeldman$elm_css$Html$Styled$node = rtfeldman$elm_css$VirtualDom$Styled$node;
 var rtfeldman$elm_css$Html$Styled$div = rtfeldman$elm_css$Html$Styled$node('div');
-var elm$json$Json$Encode$string = _Json_wrap;
-var elm$core$Basics$identity = function (x) {
-	return x;
-};
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -4946,6 +5534,16 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
+	return {$: 'Unstyled', a: a};
+};
+var rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
+	return rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
+		elm$virtual_dom$VirtualDom$text(str));
+};
+var rtfeldman$elm_css$Html$Styled$text = rtfeldman$elm_css$VirtualDom$Styled$text;
+var elm$json$Json$Encode$string = _Json_wrap;
 var elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
 		return A2(
@@ -4963,9 +5561,6 @@ var Skinney$murmur3$Murmur3$HashData = F4(
 	});
 var Skinney$murmur3$Murmur3$c1 = 3432918353;
 var Skinney$murmur3$Murmur3$c2 = 461845907;
-var elm$core$Bitwise$and = _Bitwise_and;
-var elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
-var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var Skinney$murmur3$Murmur3$multiplyBy = F2(
 	function (b, a) {
 		return ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16);
@@ -5042,79 +5637,9 @@ var elm$core$List$singleton = function (value) {
 	return _List_fromArray(
 		[value]);
 };
-var elm$core$String$cons = _String_cons;
 var rtfeldman$elm_css$Css$Preprocess$stylesheet = function (snippets) {
 	return {charset: elm$core$Maybe$Nothing, imports: _List_Nil, namespaces: _List_Nil, snippets: snippets};
 };
-var elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							elm$core$List$foldl,
-							fn,
-							acc,
-							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
 var elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -5278,25 +5803,6 @@ var elm$core$List$takeFast = F3(
 var elm$core$List$take = F2(
 	function (n, list) {
 		return A3(elm$core$List$takeFast, 0, n, list);
-	});
-var elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return elm$core$Maybe$Nothing;
-		}
-	});
-var elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
 	});
 var rtfeldman$elm_css$Css$Preprocess$Resolve$collectSelectors = function (declarations) {
 	collectSelectors:
@@ -6898,7 +7404,42 @@ var rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 	return A3(rtfeldman$elm_css$VirtualDom$Styled$Attribute, classProperty, styles, classname);
 };
 var rtfeldman$elm_css$Html$Styled$Attributes$css = rtfeldman$elm_css$Html$Styled$Internal$css;
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var rtfeldman$elm_css$VirtualDom$Styled$on = F2(
+	function (eventName, handler) {
+		return A3(
+			rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2(elm$virtual_dom$VirtualDom$on, eventName, handler),
+			_List_Nil,
+			'');
+	});
+var rtfeldman$elm_css$Html$Styled$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
+	return A2(
+		rtfeldman$elm_css$Html$Styled$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
 var author$project$Board$renderCell = function (cell) {
+	var label = function () {
+		var _n0 = cell.piece;
+		if (_n0.$ === 'Just') {
+			var piece = _n0.a;
+			return elm$core$String$fromChar(
+				author$project$Piece$render(piece));
+		} else {
+			return '';
+		}
+	}();
 	return A2(
 		rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
@@ -6913,10 +7454,19 @@ var author$project$Board$renderCell = function (cell) {
 						A2(
 						rtfeldman$elm_css$Css$border2,
 						rtfeldman$elm_css$Css$px(1),
-						rtfeldman$elm_css$Css$solid)
-					]))
+						rtfeldman$elm_css$Css$solid),
+						rtfeldman$elm_css$Css$fontSize(
+						rtfeldman$elm_css$Css$px(65)),
+						rtfeldman$elm_css$Css$backgroundColor(
+						cell.isSelected ? A3(rtfeldman$elm_css$Css$rgb, 255, 0, 0) : A3(rtfeldman$elm_css$Css$rgb, 255, 255, 255))
+					])),
+				rtfeldman$elm_css$Html$Styled$Events$onClick(
+				author$project$Board$Click(cell))
 			]),
-		_List_Nil);
+		_List_fromArray(
+			[
+				rtfeldman$elm_css$Html$Styled$text(label)
+			]));
 };
 var elm$core$Elm$JsArray$map = _JsArray_map;
 var elm$core$Array$map = F2(
@@ -6963,8 +7513,125 @@ var author$project$Board$render = function (board) {
 		elm$core$Array$toList(
 			A2(elm$core$Array$map, author$project$Board$renderRow, board.data)));
 };
+var author$project$Main$BoardMsg = function (a) {
+	return {$: 'BoardMsg', a: a};
+};
+var elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
+var rtfeldman$elm_css$VirtualDom$Styled$KeyedNode = F3(
+	function (a, b, c) {
+		return {$: 'KeyedNode', a: a, b: b, c: c};
+	});
+var rtfeldman$elm_css$VirtualDom$Styled$KeyedNodeNS = F4(
+	function (a, b, c, d) {
+		return {$: 'KeyedNodeNS', a: a, b: b, c: c, d: d};
+	});
+var rtfeldman$elm_css$VirtualDom$Styled$NodeNS = F4(
+	function (a, b, c, d) {
+		return {$: 'NodeNS', a: a, b: b, c: c, d: d};
+	});
+var elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
+var rtfeldman$elm_css$VirtualDom$Styled$mapAttribute = F2(
+	function (transform, _n0) {
+		var prop = _n0.a;
+		var styles = _n0.b;
+		var classname = _n0.c;
+		return A3(
+			rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2(elm$virtual_dom$VirtualDom$mapAttribute, transform, prop),
+			styles,
+			classname);
+	});
+var rtfeldman$elm_css$VirtualDom$Styled$map = F2(
+	function (transform, vdomNode) {
+		switch (vdomNode.$) {
+			case 'Node':
+				var elemType = vdomNode.a;
+				var properties = vdomNode.b;
+				var children = vdomNode.c;
+				return A3(
+					rtfeldman$elm_css$VirtualDom$Styled$Node,
+					elemType,
+					A2(
+						elm$core$List$map,
+						rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						elm$core$List$map,
+						rtfeldman$elm_css$VirtualDom$Styled$map(transform),
+						children));
+			case 'NodeNS':
+				var ns = vdomNode.a;
+				var elemType = vdomNode.b;
+				var properties = vdomNode.c;
+				var children = vdomNode.d;
+				return A4(
+					rtfeldman$elm_css$VirtualDom$Styled$NodeNS,
+					ns,
+					elemType,
+					A2(
+						elm$core$List$map,
+						rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						elm$core$List$map,
+						rtfeldman$elm_css$VirtualDom$Styled$map(transform),
+						children));
+			case 'KeyedNode':
+				var elemType = vdomNode.a;
+				var properties = vdomNode.b;
+				var children = vdomNode.c;
+				return A3(
+					rtfeldman$elm_css$VirtualDom$Styled$KeyedNode,
+					elemType,
+					A2(
+						elm$core$List$map,
+						rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						elm$core$List$map,
+						function (_n1) {
+							var key = _n1.a;
+							var child = _n1.b;
+							return _Utils_Tuple2(
+								key,
+								A2(rtfeldman$elm_css$VirtualDom$Styled$map, transform, child));
+						},
+						children));
+			case 'KeyedNodeNS':
+				var ns = vdomNode.a;
+				var elemType = vdomNode.b;
+				var properties = vdomNode.c;
+				var children = vdomNode.d;
+				return A4(
+					rtfeldman$elm_css$VirtualDom$Styled$KeyedNodeNS,
+					ns,
+					elemType,
+					A2(
+						elm$core$List$map,
+						rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						elm$core$List$map,
+						function (_n2) {
+							var key = _n2.a;
+							var child = _n2.b;
+							return _Utils_Tuple2(
+								key,
+								A2(rtfeldman$elm_css$VirtualDom$Styled$map, transform, child));
+						},
+						children));
+			default:
+				var vdom = vdomNode.a;
+				return rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
+					A2(elm$virtual_dom$VirtualDom$map, transform, vdom));
+		}
+	});
+var rtfeldman$elm_css$Html$Styled$map = rtfeldman$elm_css$VirtualDom$Styled$map;
 var author$project$Main$view = function (model) {
-	return author$project$Board$render(model.board);
+	return A2(
+		rtfeldman$elm_css$Html$Styled$map,
+		author$project$Main$BoardMsg,
+		author$project$Board$render(model.board));
 };
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
@@ -7478,7 +8145,6 @@ var rtfeldman$elm_css$VirtualDom$Styled$stylesFromProperties = function (propert
 		return A2(elm$core$Dict$singleton, classname, styles);
 	}
 };
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var rtfeldman$elm_css$Css$Structure$ClassSelector = function (a) {
 	return {$: 'ClassSelector', a: a};
 };
