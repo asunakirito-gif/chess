@@ -1,16 +1,18 @@
-module Main exposing (Model, main)
+module Main exposing (Model, main, test)
 
+import Array2D
+import Board exposing (Board)
 import Browser exposing (element)
-import Html exposing (Html, div)
+import Html.Styled exposing (Html, div, toUnstyled)
 
 
 type alias Model =
-    {}
+    { board : Board }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( {}, Cmd.none )
+    ( { board = Board.initialBoard }, Cmd.none )
 
 
 type Msg
@@ -24,14 +26,14 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [] []
+    Board.render model.board
 
 
 main : Program () Model Msg
 main =
     Browser.element
         { init = init
-        , view = view
+        , view = view >> toUnstyled
         , update = update
         , subscriptions = \_ -> Sub.none
         }
