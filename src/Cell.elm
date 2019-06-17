@@ -7,5 +7,4 @@ type alias Cell =
     { piece : Maybe Piece
     , row : Int
     , column : Int
-    , isSelected : Bool
     }

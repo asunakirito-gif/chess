@@ -1,12 +1,7 @@
-module Board exposing (Board, Msg(..), initialBoard, placePieces, render, test)
+module Board exposing (Board, initial)
 
-import Array exposing (Array)
 import Array2D exposing (Array2D)
 import Cell exposing (Cell)
-import Css exposing (backgroundColor, border2, displayFlex, fontSize, height, px, rgb, solid, width)
-import Html.Styled exposing (Html, div, text)
-import Html.Styled.Attributes exposing (css)
-import Html.Styled.Events exposing (onClick)
 import Piece exposing (Color(..), Kind(..), Piece)
 
 
@@ -14,24 +9,16 @@ type alias Board =
     Array2D Cell
 
 
-size : Float
-size =
-    80
-
-
-test =
-    Array.get 0 initialBoard.data
+initial : Board
+initial =
+    Array2D.repeat 8 8 { piece = Nothing, row = 0, column = 0 }
+        |> Array2D.indexedMap setCoordinate
+        |> placePieces
 
 
 setCoordinate : Int -> Int -> Cell -> Cell
 setCoordinate row column cell =
     { cell | row = row, column = column }
-
-
-initialBoard : Board
-initialBoard =
-    Array2D.repeat 8 8 { piece = Nothing, row = 0, column = 0, isSelected = False }
-        |> Array2D.indexedMap setCoordinate
 
 
 placePieces : Board -> Board
@@ -73,48 +60,9 @@ placePieces board =
 
 placePiece : Int -> Int -> Piece -> Board -> Board
 placePiece row column piece board =
-    Array2D.set row column { piece = Just piece, row = row, column = column, isSelected = False } board
+    case Array2D.get row column board of
+        Just cell ->
+            Array2D.set row column { cell | piece = Just piece } board
 
-
-render : Board -> Html Msg
-render board =
-    div [] (Array.map renderRow board.data |> Array.toList)
-
-
-renderRow : Array Cell -> Html Msg
-renderRow row =
-    div [ css [ displayFlex ] ] (Array.map renderCell row |> Array.toList)
-
-
-type Msg
-    = Click Cell
-
-
-renderCell : Cell -> Html Msg
-renderCell cell =
-    let
-        label =
-            case cell.piece of
-                Just piece ->
-                    Piece.render piece |> String.fromChar
-
-                Nothing ->
-                    ""
-    in
-    div
-        [ css
-            [ width (px size)
-            , height (px size)
-            , border2 (px 1) solid
-            , fontSize (px 65)
-            , backgroundColor
-                (if cell.isSelected then
-                    rgb 255 0 0
-
-                 else
-                    rgb 255 255 255
-                )
-            ]
-        , onClick (Click cell)
-        ]
-        [ text label ]
+        Nothing ->
+            board
