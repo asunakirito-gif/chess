@@ -19,6 +19,7 @@ import Css
 import Html.Styled exposing (Html, div, text, toUnstyled)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
+import Piece
 
 
 type alias Model =
