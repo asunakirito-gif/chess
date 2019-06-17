@@ -1,4 +1,4 @@
-module Main exposing (Model, main, test)
+module Main exposing (Model, main)
 
 import Array2D
 import Board exposing (Board)
