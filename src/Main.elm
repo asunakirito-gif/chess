@@ -6,17 +6,20 @@ import Browser exposing (element)
 import Cell exposing (Cell)
 import Css
     exposing
-        ( backgroundColor
+        ( alignItems
+        , backgroundColor
         , border2
+        , center
         , displayFlex
         , fontSize
         , height
+        , justifyContent
         , px
         , rgb
         , solid
         , width
         )
-import Html.Styled exposing (Html, div, text, toUnstyled)
+import Html.Styled exposing (Html, div, span, text, toUnstyled)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
 import Piece
@@ -70,16 +73,15 @@ update msg model =
                     )
 
                 ( Selected c, Just piece ) ->
-                    ( model, Cmd.none )
+                    if c == cell then
+                        ( { model | state = Initial }, Cmd.none )
+
+                    else
+                        ( model, Cmd.none )
 
 
 
 -- view
-
-
-size : Float
-size =
-    80
 
 
 view : Model -> Html Msg
@@ -122,15 +124,18 @@ renderCell state cell =
     in
     div
         [ css
-            [ width (px size)
-            , height (px size)
+            [ width (px 80)
+            , height (px 80)
             , border2 (px 1) solid
-            , fontSize (px 65)
+            , fontSize (px 50)
             , backgroundColor color
+            , displayFlex
+            , justifyContent center
+            , alignItems center
             ]
         , onClick (Click cell)
         ]
-        [ text label ]
+        [ span [] [ text label ] ]
 
 
 main : Program () Model Msg
