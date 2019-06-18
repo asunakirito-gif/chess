@@ -1,4 +1,4 @@
-module Board exposing (Board, initial)
+module Board exposing (Board, initial, movePiece)
 
 import Array2D exposing (Array2D)
 import Cell exposing (Cell)
@@ -63,6 +63,28 @@ placePiece row column piece board =
     case Array2D.get row column board of
         Just cell ->
             Array2D.set row column { cell | piece = Just piece } board
+
+        Nothing ->
+            board
+
+
+removePiece : Cell -> Board -> Board
+removePiece cell board =
+    Array2D.set cell.row cell.column { cell | piece = Nothing } board
+
+
+addPiece : Cell -> Piece -> Board -> Board
+addPiece cell piece board =
+    Array2D.set cell.row cell.column { cell | piece = Just piece } board
+
+
+movePiece : Cell -> Cell -> Board -> Board
+movePiece from to board =
+    case from.piece of
+        Just piece ->
+            board
+                |> removePiece from
+                |> addPiece to piece
 
         Nothing ->
             board

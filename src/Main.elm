@@ -62,7 +62,12 @@ update msg model =
                     ( model, Cmd.none )
 
                 ( Selected c, Nothing ) ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | state = Initial
+                        , board = Board.movePiece c cell model.board
+                      }
+                    , Cmd.none
+                    )
 
                 ( Selected c, Just piece ) ->
                     ( model, Cmd.none )
