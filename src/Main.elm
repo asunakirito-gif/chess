@@ -1,7 +1,15 @@
 module Main exposing (Model, main)
 
 import Array exposing (Array)
-import Board exposing (Board)
+import Board
+    exposing
+        ( Board
+        , possibleBishopMovements
+        , possibleKingMovements
+        , possibleKnightMovements
+        , possibleQueenMovements
+        , possibleRookMovements
+        )
 import Browser exposing (element)
 import Cell exposing (Cell)
 import Css
@@ -22,7 +30,7 @@ import Css
 import Html.Styled exposing (Html, div, span, text, toUnstyled)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
-import Piece
+import Piece exposing (Piece)
 
 
 type alias Model =
@@ -42,7 +50,7 @@ init _ =
 
 type State
     = Initial
-    | Selected Cell
+    | Selected Piece ( Int, Int )
 
 
 type Msg
@@ -59,21 +67,21 @@ update msg model =
         Click cell ->
             case ( model.state, cell.piece ) of
                 ( Initial, Just piece ) ->
-                    ( { model | state = Selected cell }, Cmd.none )
+                    ( { model | state = Selected piece ( cell.row, cell.column ) }, Cmd.none )
 
                 ( Initial, Nothing ) ->
                     ( model, Cmd.none )
 
-                ( Selected c, Nothing ) ->
+                ( Selected selectedPiece from, Nothing ) ->
                     ( { model
                         | state = Initial
-                        , board = Board.movePiece c cell model.board
+                        , board = Board.movePiece selectedPiece from ( cell.row, cell.column ) model.board
                       }
                     , Cmd.none
                     )
 
-                ( Selected c, Just piece ) ->
-                    if c == cell then
+                ( Selected selectedPiece from, Just piece ) ->
+                    if from == ( cell.row, cell.column ) then
                         ( { model | state = Initial }, Cmd.none )
 
                     else
@@ -115,8 +123,8 @@ renderCell state cell =
                 Initial ->
                     rgb 255 255 255
 
-                Selected selectedCell ->
-                    if cell == selectedCell then
+                Selected _ coord ->
+                    if ( cell.row, cell.column ) == coord then
                         rgb 255 0 0
 
                     else
