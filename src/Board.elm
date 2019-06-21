@@ -296,3 +296,35 @@ foo piece coord board =
 
         Pawn ->
             []
+
+
+pawnWhiteForwardMovement :
+    ( Int, Int )
+    -> Board
+    -> List ( Int, Int )
+pawnWhiteForwardMovement ( x, y ) board =
+    case Array2D.get (x - 1) y board of
+        Nothing ->
+            []
+
+        Just cell ->
+            case cell.piece of
+                Nothing ->
+                    if x == 6 then
+                        case Array2D.get (x - 2) y board of
+                            Nothing ->
+                                [ ( x - 1, y ) ]
+
+                            Just c ->
+                                case c.piece of
+                                    Nothing ->
+                                        [ ( x - 1, y ), ( x - 2, y ) ]
+
+                                    Just _ ->
+                                        [ ( x - 1, y ) ]
+
+                    else
+                        [ ( x - 1, y ) ]
+
+                Just piece ->
+                    []
